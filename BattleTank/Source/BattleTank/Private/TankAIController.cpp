@@ -1,6 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "TankAIController.h"
+#include "Tank.h"
 #include "Engine/World.h"
 
 //get a reference to itself (AI Tank), or rather the possessed tank
