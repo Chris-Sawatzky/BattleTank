@@ -5,6 +5,7 @@
 #include "Projectile.h"
 #include "Classes/Engine/World.h"
 #include "TankAimingComponent.h"
+#include "TankMovementComponent.h"
 
 // Sets default values
 ATank::ATank()
@@ -14,6 +15,9 @@ ATank::ATank()
 
 	// No need to protect pointers as added at costruction
 	TankAimingComponent = CreateDefaultSubobject<UTankAimingComponent>(FName("Aiming Component"));
+
+	TankMovementComponent = CreateDefaultSubobject<UTankMovementComponent>(FName("Movement Component"));
+
 
 }
 
