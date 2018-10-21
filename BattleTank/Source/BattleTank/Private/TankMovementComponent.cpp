@@ -26,13 +26,24 @@ void UTankMovementComponent::IntendTurnLeft(float Throw)
 
 	LeftTrack->SetThrottle(-Throw);
 	RightTrack->SetThrottle(Throw);
-	//TODO prevent double speed due to dual control use
 }
 
 void UTankMovementComponent::RequestDirectMove(const FVector & MoveVelocity, bool bForceMaxSpeed)
 {	
+	// No need to call super as we are replacing funcionality
+
 	auto TankName = GetOwner()->GetName(); //REMEMBER THIS!!!! you get the tank name this way because you are in the component wich is part of (owned by) the tank
-	UE_LOG(LogTemp, Warning, TEXT("%s's move velocity is %s"), *TankName, *(MoveVelocity.ToString()));
+
+	auto TankForward = GetOwner()->GetActorForwardVector().GetSafeNormal();
+	auto AIForwardIntention = MoveVelocity.GetSafeNormal();
+
+	auto ForwardThrow = FVector::DotProduct(AIForwardIntention, TankForward);
+	IntendMoveForward(ForwardThrow);
+
+	auto TurnThrow = FVector::CrossProduct(AIForwardIntention, TankForward).Z;// cross product returns a vector
+	IntendTurnLeft(TurnThrow);
+
+	//UE_LOG(LogTemp, Warning, TEXT("%s's move velocity is %s"), *TankName, *AIForwardIntention);
 }
 
 
