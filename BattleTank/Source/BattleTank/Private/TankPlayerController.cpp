@@ -17,7 +17,7 @@ void ATankPlayerController::BeginPlay()
 	Super::BeginPlay();
 
 	auto AimingComponent = GetControlledTank()->FindComponentByClass<UTankAimingComponent>();
-	if (AimingComponent)
+	if (ensure(AimingComponent))
 	{
 		FoundAimingComponent(AimingComponent);
 	}
@@ -36,7 +36,7 @@ void ATankPlayerController::Tick(float time)
 
 void ATankPlayerController::AimTowardsCrosshair()
 {
-	if (!GetControlledTank()) { return; }
+	if (!ensure(GetControlledTank())) { return; }
 
 	FVector HitLocation; //Out Parameter
 	if (GetSightRayHitLocation(HitLocation)) // Has a "side-effect", is going to line trace
@@ -79,7 +79,7 @@ bool ATankPlayerController::GetLookVectorHitLocation(FVector LookDirection, FVec
 {
 	FHitResult HitResult;
 	auto StartLocation = PlayerCameraManager->GetCameraLocation(); //gets the camera starting location
-	auto EndLocation = StartLocation + (LookDirection * LineTraceRange); // determins the total possible distance of the line trace
+	auto EndLocation = StartLocation + (LookDirection * LineTraceRange); // determines the total possible distance of the line trace
 
 	if(GetWorld()->LineTraceSingleByChannel(
 			HitResult,
