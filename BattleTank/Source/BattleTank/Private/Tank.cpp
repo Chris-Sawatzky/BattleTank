@@ -5,7 +5,6 @@
 #include "Projectile.h"
 #include "Classes/Engine/World.h"
 #include "TankAimingComponent.h"
-#include "TankMovementComponent.h"
 
 // Sets default values
 ATank::ATank()
@@ -20,6 +19,8 @@ void ATank::BeginPlay()
 {
 	Super::BeginPlay();
 	//UE_LOG(LogTemp, Warning, TEXT("BuildOrder: C++ Tank BeginPlay"));
+
+	TankAimingComponent = FindComponentByClass<UTankAimingComponent>();
 	
 }
 

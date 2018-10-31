@@ -3,8 +3,8 @@
 #include "TankAIController.h"
 #include "Tank.h"
 #include "Engine/World.h"
+//Depends on movement component via pathfinding
 
-//get a reference to itself (AI Tank), or rather the possessed tank
 
 void ATankAIController::BeginPlay()
 {
