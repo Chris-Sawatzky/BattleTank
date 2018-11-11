@@ -6,6 +6,7 @@
 #include "TankBarrel.h"
 #include "GameFramework/Actor.h"
 #include "Turret.h"
+#include "Projectile.h"
 #include "Classes/Engine/World.h"
 
 
@@ -19,13 +20,35 @@ UTankAimingComponent::UTankAimingComponent()
 	// ...
 }
 
+void UTankAimingComponent::BeginPlay()
+{
+	LastFireTime = FPlatformTime::Seconds();
+}
+
+void UTankAimingComponent::TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction *ThisTickFunction)
+{
+	if ((FPlatformTime::Seconds() - LastFireTime) < ReloadTimeInSeconds)
+	{
+		FiringStates = EFiringStates::Reloading;
+	}
+	else if (IsBarrelMoving())
+	{
+		FiringStates = EFiringStates::Aiming;
+	}
+	else
+	{
+		FiringStates = EFiringStates::Locked;
+	}
+
+}
+
 void UTankAimingComponent::Initialize(UTurret * TurretToSet, UTankBarrel * BarrelToSet)
 {
 	Barrel = BarrelToSet;
 	Turret = TurretToSet;
 }
 
-void UTankAimingComponent::AimAt(FVector HitLocation, float LaunchSpeed)
+void UTankAimingComponent::AimAt(FVector HitLocation)
 {
 	if (!ensure(Barrel)) { return; }
 
@@ -47,7 +70,7 @@ void UTankAimingComponent::AimAt(FVector HitLocation, float LaunchSpeed)
 	// Calculate the OutLaunchVelocity
 	if (bHaveAimSolution)
 	{
-		auto AimDirection = OutLaunchVelocity.GetSafeNormal();
+		AimDirection = OutLaunchVelocity.GetSafeNormal();
 		auto Time = GetWorld()->GetTimeSeconds();
 		MoveBarrel(AimDirection);
 	}
@@ -65,5 +88,23 @@ void UTankAimingComponent::MoveBarrel(FVector AimDirection)
 
 	Barrel->Elevate(DeltaRotator.Pitch);
 	Turret->Rotate(DeltaRotator.Yaw);
+}
+
+void UTankAimingComponent::Fire()
+{
+	if (!ensure(Barrel && ProjectileBlueprint)) { return; }
+	if (FiringStates != EFiringStates::Reloading)
+	{
+		auto Projectile = GetWorld()->SpawnActor<AProjectile>(ProjectileBlueprint, Barrel->GetSocketLocation(FName("Projectile")), Barrel->GetSocketRotation(FName("Projectile")));
+		Projectile->Launch(LaunchSpeed);
+
+		LastFireTime = FPlatformTime::Seconds();
+	}
+}
+
+bool UTankAimingComponent::IsBarrelMoving()
+{
+	if (!ensure(Barrel)) { return false; }
+	return !Barrel->GetForwardVector().FVector::Equals(AimDirection, 0.01);
 }
 
