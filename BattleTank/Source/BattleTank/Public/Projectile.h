@@ -23,6 +23,12 @@ protected:
 
 	UProjectileMovementComponent * ProjectileMovementComponent = nullptr;
 
+	UPROPERTY(VisibleAnywhere)
+	UStaticMeshComponent * CollisionMesh = nullptr;
+
+	UPROPERTY(VisibleAnywhere)
+	UParticleSystemComponent * LaunchBlast = nullptr;
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
